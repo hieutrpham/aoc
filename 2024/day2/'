@@ -30,12 +30,12 @@ issafe() {
 dampener() {
 	local arr=($@)
 	local tmp=(${arr[@]})
+	echo ${tmp[@]}
 	local len=${#arr[@]}
 		for ((i = 0; i < len; i++))
 		do
 			unset tmp[i]
 			new_arr=(${tmp[@]})
-			echo ${new_arr[@]}
 			tmp=(${arr[@]})
 			issafe ${new_arr[@]}
 			status=$?
@@ -44,7 +44,6 @@ dampener() {
 			else continue
 			fi
 		done
-	return 0
 }
 
 count=0
@@ -57,6 +56,7 @@ do
 	then ((count++))
 	else
 		dampener ${arr[@]}
+		echo $?
 		if (($? == 1))
 		then ((count++))
 		fi
