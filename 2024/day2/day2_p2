@@ -29,21 +29,25 @@ issafe() {
 
 dampener() {
 	local arr=($@)
-	local tmp=(${arr[@]})
 	local len=${#arr[@]}
-		for ((i = 0; i < len; i++))
+	echo "start dampening"
+	for ((i = 0; i < len; i++))
+	do
+		local new_arr=()
+		echo "testing level $i"
+		for ((j = 0; j < len; j++))
 		do
-			unset tmp[i]
-			new_arr=(${tmp[@]})
-			echo ${new_arr[@]}
-			tmp=(${arr[@]})
-			issafe ${new_arr[@]}
-			status=$?
-			if ((status == 1))
-			then return 1
-			else continue
+			if ((j != i))
+			then new_arr+=("${arr[j]}")
 			fi
 		done
+		echo "new array: ${new_arr[@]}"
+		issafe "${new_arr[@]}"
+		# if (($? == 1))
+		# then return 1
+		# else continue
+		# fi
+	done
 	return 0
 }
 
@@ -54,11 +58,13 @@ do
 	issafe ${arr[@]}
 	status=$?
 	if ((status == 1))
-	then ((count++))
+	then echo "line: $line is safe"; ((count++))
 	else
+		echo "line: $line is not safe. trying to dampen"
 		dampener ${arr[@]}
 		if (($? == 1))
-		then ((count++))
+		then echo "line: $line is dampened"; ((count++))
+		else echo "line: $line cannot be dampened"
 		fi
 	fi
 done < $1
