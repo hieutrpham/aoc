@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+issafe() {
+	local array=($@)
+	local len=${#array[@]}
+	local inrange=1
+	local tmp=$((array[1] - array[0]))
+
+	for ((i=2; i < len; i++))
+	do
+		diff=$((array[i] - array[i-1]))
+		# checking if all increasing or all decreasing
+		if (( (diff < 0 && tmp > 0) || ( diff > 0 && tmp < 0)))
+		then return 0
+		fi
+
+		# checking the level is within range
+		if ((inrange == 1 && ${diff#-} >= 1 && ${diff#-} <= 3))
+		then ((inrange=1))
+		else ((inrange=0))
+		fi
+	done
+
+	if ((inrange == 1 && ${tmp#-} >=1 && ${tmp#-} <=3))
+	then return 1
+	else return 0
+	fi
+}
+
+count=0
+while read -r line
+do
+	arr=($line)
+	issafe ${arr[@]}
+	((count+=$?))
+done < $1
+echo "count: "$count

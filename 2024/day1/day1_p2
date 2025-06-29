@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+lhs=()
+rhs=()
+while read -r x y
+do
+	lhs+=($x)
+	rhs+=($y)
+done < $1
+
+len=${#lhs[@]}
+declare -A dict
+
+for value in ${rhs[@]}
+do
+	((dict[$value]++))
+done
+
+sum=0
+for value in "${lhs[@]}"
+do
+	freq=${dict[$value]}
+	tmp=$((value * freq))
+	((sum+=tmp))
+done
+echo $sum

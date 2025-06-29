@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+lhs=()
+rhs=()
+while read -r x y
+do
+	lhs+=($x)
+	rhs+=($y)
+done < $1
+
+mapfile -t leftsort < <(printf "%d\n" "${lhs[@]}" | sort -n)
+mapfile -t rightsort < <(printf "%d\n" "${rhs[@]}" | sort -n)
+
+len=${#leftsort[@]}
+sum=0
+for ((i = 0; i < len; i++))
+do
+	tmp=$((${leftsort[i]} - ${rightsort[i]}))
+	sum=$(($sum + ${tmp#-}))
+done
+
+echo $sum
