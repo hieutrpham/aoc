@@ -4,51 +4,40 @@
 issafe() {
 	local array=($@)
 	local len=${#array[@]}
-	local inrange=1
 	local tmp=$((array[1] - array[0]))
-
-	for ((i=2; i < len; i++))
+	for ((k=1; k < len; k++))
 	do
-		diff=$((array[i] - array[i-1]))
+		local prev=${array[k-1]}
+		local curr=${array[k]}
+		local diff=$((curr - prev))
+		local dist=${diff#-}
 		# checking if all increasing or all decreasing
-		if (( (diff < 0 && tmp > 0) || ( diff > 0 && tmp < 0)))
-		then return 0
+		if (( diff < 0 && tmp > 0 ))
+		then return 1
+		elif (( diff > 0 && tmp < 0))
+		then return 1
 		fi
 		# checking the level is within range
-		if ((inrange == 1 && ${diff#-} >= 1 && ${diff#-} <= 3))
-		then ((inrange=1))
-		else ((inrange=0))
+		if ((dist < 1 || dist > 3))
+		then return 1
 		fi
 	done
-
-	if ((inrange == 1 && ${tmp#-} >=1 && ${tmp#-} <=3))
-	then return 1
-	else return 0
-	fi
+	return 0
 }
 
 dampener() {
 	local arr=($@)
 	local len=${#arr[@]}
-	echo "start dampening"
 	for ((i = 0; i < len; i++))
 	do
 		local new_arr=()
-		echo "testing level $i"
 		for ((j = 0; j < len; j++))
 		do
-			if ((j != i))
-			then new_arr+=("${arr[j]}")
-			fi
+			((j != i)) && new_arr+=("${arr[j]}")
 		done
-		echo "new array: ${new_arr[@]}"
-		issafe "${new_arr[@]}"
-		# if (($? == 1))
-		# then return 1
-		# else continue
-		# fi
+		issafe "${new_arr[@]}" && return 0
 	done
-	return 0
+	return 1
 }
 
 count=0
@@ -57,15 +46,10 @@ do
 	arr=($line)
 	issafe ${arr[@]}
 	status=$?
-	if ((status == 1))
-	then echo "line: $line is safe"; ((count++))
+	if ((status == 0))
+	then ((count++))
 	else
-		echo "line: $line is not safe. trying to dampen"
-		dampener ${arr[@]}
-		if (($? == 1))
-		then echo "line: $line is dampened"; ((count++))
-		else echo "line: $line cannot be dampened"
-		fi
+		dampener "${arr[@]}" && ((count++))
 	fi
 done < $1
 echo "count: " $count

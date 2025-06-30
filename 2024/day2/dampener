@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# return 1 if safe, 0 if not safe
+issafe() {
+	local array=($@)
+	local len=${#array[@]}
+	local tmp=$((array[1] - array[0]))
+
+	for ((i=1; i < len; i++))
+	do
+		diff=$((array[i] - array[i-1]))
+		# checking if all increasing or all decreasing
+		if (( (diff < 0 && tmp > 0) || ( diff > 0 && tmp < 0)))
+		then return 0
+		fi
+		# checking the level is within range
+		if ! ((${diff#-} >= 1 && ${diff#-} <= 3))
+		then return 0
+		fi
+	done
+	return 1
+}
+
+dampener() {
+	local arr=($@)
+	local len=${#arr[@]}
+	echo "start dampening"
+	for ((i = 0; i < len; i++))
+	do
+		local new_arr=()
+		echo "testing level $i"
+		for ((j = 0; j < len; j++))
+		do
+			if ((j != i))
+			then new_arr+=("${arr[j]}")
+			fi
+		done
+		echo "new array: ${new_arr[@]}"
+		issafe "${new_arr[@]}"
+		if (($? == 1))
+			then return 1
+		else continue
+		fi
+	done
+	return 0
+}
+
+count=0
+while read -r line
+do
+	arr=($line)
+	issafe ${arr[@]}
+	status=$?
+	if ((status == 1))
+	then echo "line: $line is safe"; ((count++))
+	else
+		echo "line: $line is not safe. trying to dampen"
+		dampener ${arr[@]}
+		if (($? == 1))
+		then echo "line: $line is dampened"; ((count++))
+		else echo "line: $line cannot be dampened"
+		fi
+	fi
+done < $1
+echo "count: " $count
