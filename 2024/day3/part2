@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+s=$(< /dev/stdin)
+s=${s//don\'t()/don\'t()$'\n'}
+
+# reading input file to an array
+arr=()
+while read -r line; do
+	arr+=("$line")
+done <<< "$s"
+
+res=0
+pattern="mul\(([0-9]+),([0-9]+)\)"
+do_pattern="do\(\).*"
+
+
+while IFS= read -r match; do
+	while IFS= read -r pat; do
+		if [[ $match =~ $pattern ]]; then
+			sum=$(( ${BASH_REMATCH[1]} * ${BASH_REMATCH[2]} ))
+			((res+=sum))
+		fi
+	done < <(echo "$match" | grep -E -o $pattern)
+done < <(echo "${arr[0]}")
+
+
+for ((i = 1; i < ${#arr[@]}; i++)); do
+	echo "arr $i:" ${arr[i]}
+	echo
+	while IFS= read -r pat; do
+		echo "do pattern: " $pat
+		echo
+		while IFS= read -r match; do
+			echo "match inner" $match
+			echo
+			if [[ $match =~ $pattern ]]; then
+				sum=$(( ${BASH_REMATCH[1]} * ${BASH_REMATCH[2]} ))
+				((res+=sum))
+			fi
+			echo "current res" $res
+			echo
+		done < <(echo "$pat" | grep -E -o $pattern)
+	done < <(echo "${arr[i]}" | grep -E -o $do_pattern)
+done
+
+echo "result: "$res

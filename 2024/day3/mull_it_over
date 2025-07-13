@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-multiply() {
-	local res=
-	res=$(( $1 * $2 ))
-	echo $res
-}
-
 res=0
 pattern="mul\(([0-9]+),([0-9]+)\)"
 
