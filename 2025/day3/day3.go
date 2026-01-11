@@ -30,92 +30,26 @@ func part1(line string) int {
 	return int((max1-'0')*10 + (max2 - '0'))
 }
 
-/*
-	12 batteries instead of 2
-
-Eg:
-
-	818181911112111
-	^ ^ ^ ^^^^^^^^^
-
-create a array of 12 slots. for each slots i have to check for the most optimum number
-the first slot can probably be chosen on the first loop.
-*/
 func part2(line string) int {
 	var next int
 	var ret [12]int
-	for j := 0; j < len(line)-11; j++ {
-		if int(line[j]-'0') > ret[0] {
-			ret[0] = int(line[j] - '0')
-			next = j + 1
+
+	// this function fill each slot of the ret array with the optimum digit
+	// once it finds the optimum number for each slot, it moves on to the 'next' index
+	fill_slot := func(line string, slot int) {
+		for j := next; j < len(line)-(11-slot); j++ {
+			if int(line[j]-'0') > ret[slot] {
+				ret[slot] = int(line[j] - '0')
+				next = j + 1
+			}
 		}
 	}
-	for j := next; j < len(line)-10; j++ {
-		if int(line[j]-'0') > ret[1] {
-			ret[1] = int(line[j] - '0')
-			next = j + 1
-		}
+
+	// just call the fill slot function 12 times to fill all 12 batteries
+	for i := 0; i < 12; i++ {
+		fill_slot(line, i)
 	}
-	for j := next; j < len(line)-9; j++ {
-		if int(line[j]-'0') > ret[2] {
-			ret[2] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-8; j++ {
-		if int(line[j]-'0') > ret[3] {
-			ret[3] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-7; j++ {
-		if int(line[j]-'0') > ret[4] {
-			ret[4] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-6; j++ {
-		if int(line[j]-'0') > ret[5] {
-			ret[5] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-5; j++ {
-		if int(line[j]-'0') > ret[6] {
-			ret[6] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-4; j++ {
-		if int(line[j]-'0') > ret[7] {
-			ret[7] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-3; j++ {
-		if int(line[j]-'0') > ret[8] {
-			ret[8] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-2; j++ {
-		if int(line[j]-'0') > ret[9] {
-			ret[9] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line)-1; j++ {
-		if int(line[j]-'0') > ret[10] {
-			ret[10] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
-	for j := next; j < len(line); j++ {
-		if int(line[j]-'0') > ret[11] {
-			ret[11] = int(line[j] - '0')
-			next = j + 1
-		}
-	}
+
 	var s string
 	for i := 0; i < len(ret); i++ {
 		s += string(ret[i] + '0')
