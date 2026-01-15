@@ -19,17 +19,20 @@ func part1(input [][]byte) int {
 			var count int
 			char := input[row][col]
 			if char == '@' {
+				// fmt.Println(string(char))
 				var neighbors []byte
 				for x := -1; x <= 1; x++ {
 					for y := -1; y <= 1; y++ {
 						row_x := row + x
-						row_y := row + y
-						if row_x >= 0 && row_x < input_row_len && row_y >= 0 && row_y < input_col_len {
-							neighbors = append(neighbors, input[row_x][row_y])
+						col_y := col + y
+						if row_x >= 0 && row_x < input_row_len && col_y >= 0 && col_y < input_col_len {
+							if x == y && x == 0 && y == 0 {
+								continue
+							}
+							neighbors = append(neighbors, input[row_x][col_y])
 						}
 					}
 				}
-				fmt.Println("current neighbors:", string(neighbors))
 				for _, neighbor := range neighbors {
 					if neighbor == char {
 						count++
@@ -39,6 +42,13 @@ func part1(input [][]byte) int {
 					sum++
 					saved_input[row][col] = 'x'
 				}
+			}
+		}
+	}
+	for row := 0; row < len(saved_input); row++ {
+		for col := 0; col < len(saved_input[0]); col++ {
+			if saved_input[row][col] == 'x' {
+				input[row][col] = saved_input[row][col]
 			}
 		}
 	}
@@ -69,16 +79,16 @@ func main() {
 	}
 
 	// part1
-	fmt.Println("part 1:", part1(grid2d))
+	// fmt.Println("part 1:", part1(grid2d))
 
-	// part2
-	// sum := 0
-	// for {
-	// 	count := part1(grid2d)
-	// 	if count <= 0 {
-	// 		break
-	// 	}
-	// 	sum += count
-	// }
-	// fmt.Println(sum)
+	//part2
+	sum := 0
+	for {
+		count := part1(grid2d)
+		if count <= 0 {
+			break
+		}
+		sum += count
+	}
+	fmt.Println(sum)
 }
