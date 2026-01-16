@@ -4,12 +4,20 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 func part1(input [][]byte) int {
 	var sum int
 	input_row_len := len(input)
 	input_col_len := len(input[0])
+	for row := 0; row < input_row_len; row++ {
+		fmt.Println(string(input[row]))
+	}
+	time.Sleep(time.Millisecond * 500)
+	fmt.Printf("\x1b[%dD", input_row_len)
+	fmt.Printf("\x1b[%dA", input_col_len)
+
 	saved_input := make([][]byte, input_row_len)
 	for row := range saved_input {
 		saved_input[row] = make([]byte, input_col_len)
@@ -90,5 +98,6 @@ func main() {
 		}
 		sum += count
 	}
-	fmt.Println(sum)
+	fmt.Print("\033[H\033[2J")
+	// fmt.Println(sum)
 }
