@@ -98,6 +98,6 @@ func main() {
 		}
 		sum += count
 	}
-	fmt.Print("\033[H\033[2J")
+	fmt.Print("\x1b[H\x1b[2J")
 	// fmt.Println(sum)
 }
