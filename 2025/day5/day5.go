@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -44,18 +45,15 @@ func part1(id_range []string, ingredient_id []string) int {
 }
 
 func part2(id_range []string) int {
-	sum := make(map[int]bool)
 	s := get_id_range(id_range)
+	var sorted_s []int
 	for i := range s {
-		for j := s[i][0]; j <= s[i][1]; j++ {
-			fmt.Println(j)
-			if !sum[j] {
-				sum[j] = true
-			}
-		}
+		sorted_s = append(sorted_s, s[i][0])
+		sorted_s = append(sorted_s, s[i][1])
 	}
-	fmt.Println(sum)
-	return len(sum)
+	slices.Sort(sorted_s)
+	fmt.Println(sorted_s)
+	return 0
 }
 
 func main() {
