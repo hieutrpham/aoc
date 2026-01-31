@@ -17,36 +17,7 @@ func get_num(char string) int {
 	return num
 }
 
-func main() {
-	var input [][]string
-	row := 0
-	// stride := 0
-	scanner := bufio.NewScanner(os.Stdin)
-	for {
-		scanned := scanner.Scan()
-		if !scanned {
-			break
-		}
-		line := scanner.Text()
-		input = append(input, strings.Split(line, " "))
-		// stride = len(input)
-		row++
-	}
-	fmt.Println(len(input))
-	var clean_input []string
-	for row := 0; row < len(input); row++ {
-		for item := 0; item < len(input[row]); item++ {
-			value := input[row][item]
-			if len(value) != 0 {
-				clean_input = append(clean_input, value)
-			}
-		}
-	}
-	fmt.Println(len(clean_input))
-	stride := len(clean_input) / len(input)
-	fmt.Println("stride:", stride)
-
-	// 5 rows, and 3780 columns with the last row storing the operator
+func part1(clean_input []string, stride int, row int) int {
 	total := 0
 	var answer int
 	for x := 0; x < stride; x++ {
@@ -66,5 +37,32 @@ func main() {
 		}
 		total += answer
 	}
-	fmt.Println(total)
+	return total
+}
+
+func main() {
+	var input [][]string
+	row := 0
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		scanned := scanner.Scan()
+		if !scanned {
+			break
+		}
+		line := scanner.Text()
+		input = append(input, strings.Split(line, " "))
+		row++
+	}
+
+	var clean_input []string
+	for row := 0; row < len(input); row++ {
+		for item := 0; item < len(input[row]); item++ {
+			value := input[row][item]
+			if len(value) != 0 {
+				clean_input = append(clean_input, value)
+			}
+		}
+	}
+	stride := len(clean_input) / len(input)
+	fmt.Println(part1(clean_input, stride, row))
 }
