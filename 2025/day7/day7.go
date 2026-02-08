@@ -13,17 +13,7 @@ func print_array[T any](input []T) {
 	}
 }
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	var input [][]string
-	for {
-		scanned := scanner.Scan()
-		if !scanned {
-			break
-		}
-		line := scanner.Text()
-		input = append(input, strings.Split(line, ""))
-	}
+func part1(input [][]string) int {
 	row := len(input)
 	col := len(input[0])
 	count := 0
@@ -43,5 +33,35 @@ func main() {
 			}
 		}
 	}
-	print_array(input)
+	return count
+}
+
+func get_input() [][]string {
+	scanner := bufio.NewScanner(os.Stdin)
+	var input [][]string
+	for {
+		scanned := scanner.Scan()
+		if !scanned {
+			break
+		}
+		line := scanner.Text()
+		input = append(input, strings.Split(line, ""))
+	}
+	return input
+}
+
+type Coord struct {
+	x int
+	y int
+}
+
+type Node struct {
+	coord Coord
+	left  *Node
+	right *Node
+}
+
+func main() {
+	input := get_input()
+	part1(input)
 }
