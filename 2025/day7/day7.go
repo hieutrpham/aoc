@@ -87,8 +87,8 @@ type Coord struct {
 	col int
 }
 
-// node stores the pointer to the left and right node splitter
 type Node struct {
+	value    int
 	coord    Coord
 	children []*Node
 }
@@ -96,23 +96,63 @@ type Node struct {
 func newNode(row int, col int) Node {
 	return Node{coord: Coord{row, col}}
 }
+
+// if there are no children, the node value will be 1
+// if there are children, the node value will be the sum of the children's node values
+func count_timeline(node *Node) int {
+	if node == nil {
+		return 1
+	}
+	if node != nil && len(node.children) == 0 {
+		node.value += 1
+	}
+	if node != nil && len(node.children) > 0 {
+		for _, child := range node.children {
+			if child != nil && child.value != 0 {
+				node.value += child.value
+			} else {
+				node.value += count_timeline(child)
+			}
+		}
+	}
+	return node.value
+}
+
 func main() {
 	input := get_input()
 	output, _ := part1(input)
+
+	// root node
 	nodes := make(map[Coord]*Node)
 	row_len := len(output)
 	col_len := len(output[0])
-	count := 0
+	var start_pos Coord
+	// create all the beam structs
 	for row := 0; row < row_len; row++ {
 		for col := 0; col < col_len; col++ {
-			if output[row][col] == "^" {
-				if output[row-1][col] == "|" {
+			if output[row][col] == "|" {
+				if output[row-1][col] == "S" {
+					start_pos = Coord{row, col}
+				}
+				if nodes[Coord{row, col}] == nil {
 					new := newNode(row, col)
 					nodes[Coord{row, col}] = &new
-					count++
 				}
 			}
 		}
 	}
-	fmt.Println(nodes)
+	// connect the beams
+	for row := 0; row < row_len; row++ {
+		for col := 0; col < col_len; col++ {
+			if output[row][col] == "|" {
+				if row < row_len-1 && output[row+1][col] == "^" {
+					nodes[Coord{row, col}].children = append(nodes[Coord{row, col}].children, nodes[Coord{row + 2, col - 1}])
+					nodes[Coord{row, col}].children = append(nodes[Coord{row, col}].children, nodes[Coord{row + 2, col + 1}])
+				} else if row < row_len-1 && output[row+1][col] == "|" {
+					nodes[Coord{row, col}].children = append(nodes[Coord{row, col}].children, nodes[Coord{row + 1, col}])
+				}
+			}
+		}
+	}
+	fmt.Println("total timeline:", count_timeline(nodes[start_pos]))
 }
