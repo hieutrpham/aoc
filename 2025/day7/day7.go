@@ -89,12 +89,7 @@ type Coord struct {
 
 type Node struct {
 	value    int
-	coord    Coord
 	children []*Node
-}
-
-func newNode(row int, col int) Node {
-	return Node{coord: Coord{row, col}}
 }
 
 // if there are no children, the node value will be 1
@@ -135,7 +130,7 @@ func main() {
 					start_pos = Coord{row, col}
 				}
 				if nodes[Coord{row, col}] == nil {
-					new := newNode(row, col)
+					new := Node{}
 					nodes[Coord{row, col}] = &new
 				}
 			}
